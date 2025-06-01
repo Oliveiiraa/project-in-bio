@@ -24,3 +24,15 @@ if (getApps().length === 0) {
 export const db = getFirestore();
 
 export const storage = getStorage().bucket();
+
+export async function getDownloadUrlFromPath(path?: string) {
+  if (!path) return;
+
+  const storageRef = storage.file(path);
+  const [url] = await storageRef.getSignedUrl({
+    action: "read",
+    expires: "03-01-2500",
+  });
+
+  return url;
+}

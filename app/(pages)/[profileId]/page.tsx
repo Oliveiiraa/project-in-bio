@@ -2,10 +2,11 @@ import ProjectCard from "@/app/components/commons/project-card";
 import { TotalVisits } from "@/app/components/commons/total-visits";
 import UserCard from "@/app/components/commons/user-card";
 import { auth } from "@/app/lib/auth";
-import { getProfile } from "@/app/server/get-profile";
+import { getProfile, getProfileProjects } from "@/app/server/get-profile";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import NewProject from "./new-project";
+import { getDownloadUrlFromPath } from "@/app/lib/firebase";
 
 export default async function ProfilePage({
   params,
@@ -22,6 +23,8 @@ export default async function ProfilePage({
 
   const isOwner = session?.user?.id === profile.userId;
 
+  const projects = await getProfileProjects(profileId);
+
   return (
     <div className="relative h-screen flex p-20 overflow-hidden">
       <div className="fixed top-0 left-0 w-full flex justify-center items-center gap-1 py-2 bg-background-tertiary">
@@ -36,12 +39,14 @@ export default async function ProfilePage({
         <UserCard />
       </div>
       <div className="w-full flex justify-center content-start gap-4 flex-wrap overflow-y-auto">
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
+        {projects.map(async (project) => (
+          <ProjectCard
+            key={project.projectName}
+            project={project}
+            isOwner={isOwner}
+            img={await getDownloadUrlFromPath(project.imagePath)}
+          />
+        ))}
         {isOwner && <NewProject profileId={profileId} />}
       </div>
       {isOwner && (
