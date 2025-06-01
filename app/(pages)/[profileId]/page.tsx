@@ -44,7 +44,7 @@ export default async function ProfilePage({
             key={project.projectName}
             project={project}
             isOwner={isOwner}
-            img={await getDownloadUrlFromPath(project.imagePath)}
+            img={(await getDownloadUrlFromPath(project.imagePath)) || ""}
           />
         ))}
         {isOwner && <NewProject profileId={profileId} />}
